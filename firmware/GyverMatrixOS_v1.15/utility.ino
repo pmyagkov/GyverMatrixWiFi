@@ -267,11 +267,26 @@ uint32_t getPixColorXY(int8_t x, int8_t y) {
 
 // получить номер пикселя в ленте по координатам
 uint16_t getPixelNumber(int8_t x, int8_t y) {
-  if ((THIS_Y % 2 == 0) || MATRIX_TYPE) {               // если чётная строка
-    return (THIS_Y * _WIDTH + THIS_X);
-  } else {                                              // если нечётная строка
-    return (THIS_Y * _WIDTH + _WIDTH - THIS_X - 1);
+
+  int8_t nextX = x;
+  int8_t nextY = y;
+
+  int8_t num;
+
+  if (x % 2 == 0) {
+    num = x * 4 + y;
+  } else {
+    num = x * 4 + 8 - y - 5;
   }
+
+  if (y >= 4) {
+    num = num + 32 - 4;
+    if (x % 2 == 1) {
+      num = num + 8;
+    }
+  }
+
+  return num;
 }
 
 // hex string to uint32_t
