@@ -58,13 +58,13 @@ void customRoutine() {
     // Беугщая строка - таймер внутри fillString (runningText.ino)
     if (!isAlarming && (thisMode == DEMO_TEXT_0 || thisMode == DEMO_TEXT_1 || thisMode == DEMO_TEXT_2)) {
       customModes(thisMode);
-    } 
+    }
 
     // Эффекты - возможно наложение часов
     else {
-      doEffectWithOverlay(thisMode); 
+      doEffectWithOverlay(thisMode);
     }
-  } 
+  }
 
   // Игры - таймер внутри игр
   else {
@@ -101,7 +101,7 @@ void doEffectWithOverlay(byte aMode) {
       showDateStateLastChange = millis();
       showDateState = !showDateState;
     }
-        
+
 #if (OVERLAY_CLOCK == 1)
     if (needOverlay) {
       if (showDateInClock && showDateState) {
@@ -109,14 +109,14 @@ void doEffectWithOverlay(byte aMode) {
       } else {
         if (CLOCK_ORIENT == 0)
           clockOverlayWrapH(CLOCK_X, CLOCK_Y);
-        else  
+        else
           clockOverlayWrapV(CLOCK_X, CLOCK_Y);
       }
       lastOverlayMode = thisMode;
       if (loadFlag2) {
         setOverlayColors();
         loadFlag2 = false;
-      }          
+      }
     }
     loadingFlag = false;
 #endif
@@ -124,9 +124,9 @@ void doEffectWithOverlay(byte aMode) {
   }
 }
 
-void customModes(byte aMode) {  
+void customModes(byte aMode) {
 
-  switch (aMode) {    
+  switch (aMode) {
     case DEMO_TEXT_0:              fillString(TEXT_1, CRGB::RoyalBlue); break;
     case DEMO_TEXT_1:              fillString(TEXT_2, 1); break;
     case DEMO_TEXT_2:              fillString(TEXT_3, 2); break;
@@ -167,7 +167,7 @@ void customModes(byte aMode) {
     case DEMO_ANIMATION_4:         animation(4); break;
     case DEMO_ANIMATION_5:         animation(5); break;
     */
-    
+
     // Специальные режимы - доступные только для вызова из эффекта рассвета - dawnProcedure()
     case DEMO_DAWN_ALARM_SPIRAL:   dawnLampSpiral(); break;
     case DEMO_DAWN_ALARM_SQUARE:   dawnLampSquare(); break;
@@ -176,7 +176,7 @@ void customModes(byte aMode) {
 
 // ********************* ОСНОВНОЙ ЦИКЛ РЕЖИМОВ *******************
 
-static void nextMode() {  
+static void nextMode() {
 #if (SMOOTH_CHANGE == 1)
   fadeMode = 0;
   modeDir = true;
@@ -200,33 +200,33 @@ void nextModeHandler() {
     setRandomMode2();
     return;
   }
-  
+
   byte aCnt = 0;
   byte curMode = thisMode;
 
   loadingFlag = true;
-  autoplayTimer = millis();  
-  
+  autoplayTimer = millis();
+
   while (aCnt < MODES_AMOUNT) {
     // Берем следующий режим по циклу режимов
-    aCnt++; thisMode++;  
+    aCnt++; thisMode++;
     if (thisMode >= MODES_AMOUNT) thisMode = 0;
 
     // Если новый режим отмечен флагом "использовать" - используем его, иначе берем следующий (и проверяем его)
     if (getUsageForMode(thisMode)) break;
-    
+
     // Если перебрали все и ни у одного нет флага "использовать" - не обращаем внимание на флаг, используем следующий
     if (aCnt >= MODES_AMOUNT) {
       thisMode = curMode++;
       if (thisMode >= MODES_AMOUNT) thisMode = 0;
       break;
-    }  
+    }
     #if defined(ESP8266)
-    ESP.wdtFeed();  
+    ESP.wdtFeed();
     #endif
   }
 
-  setModeByModeId(thisMode); 
+  setModeByModeId(thisMode);
   autoplayTimer = millis();
 
   FastLED.clear();
@@ -246,27 +246,27 @@ void prevModeHandler() {
 
   while (aCnt < MODES_AMOUNT) {
     // Берем предыдущий режим по циклу режимов
-    aCnt++; thisMode--; // thisMode: byte => при переполнении вернет 255 
+    aCnt++; thisMode--; // thisMode: byte => при переполнении вернет 255
     if (thisMode >= MODES_AMOUNT) thisMode = MODES_AMOUNT - 1;
 
     // Если новый режим отмечен флагом "использовать" - используем его, иначе берем следующий (и проверяем его)
     if (getUsageForMode(thisMode)) break;
-    
+
     // Если перебрали все и ни у адного нет флага "использовать" - не обращаем внимание на флаг, используем следующий
     if (aCnt >= MODES_AMOUNT) {
       thisMode = curMode--; // thisMode: byte => при переполнении вернет 255
       if (thisMode >= MODES_AMOUNT) thisMode = MODES_AMOUNT - 1;
       break;
-    }   
-    
-    #if defined(ESP8266)    
-    ESP.wdtFeed(); 
+    }
+
+    #if defined(ESP8266)
+    ESP.wdtFeed();
     #endif
   }
-  
-  setModeByModeId(thisMode); 
+
+  setModeByModeId(thisMode);
   autoplayTimer = millis();
-  
+
   FastLED.clear();
   FastLED.show();
   FastLED.setBrightness(globalBrightness);
@@ -274,22 +274,22 @@ void prevModeHandler() {
 
 void setTimersForMode(byte aMode) {
   if (runningFlag || aMode == DEMO_TEXT_0 || aMode == DEMO_TEXT_1 || aMode == DEMO_TEXT_2) {
-    // Это бегущий текст  
+    // Это бегущий текст
     scrollSpeed = getScrollSpeed();
     if (scrollSpeed == 0) scrollSpeed = 1;
     scrollTimer.setInterval(scrollSpeed);
-  } 
+  }
   else if (aMode == DEMO_PAINTBALL) {
     // Это эффект Пейнтбол
-    effectSpeed = getEffectSpeed(EFFECT_PAINTBALL);  // В этом эффекте параметр "скорость" влияет на количество шариков 1..4 
+    effectSpeed = getEffectSpeed(EFFECT_PAINTBALL);  // В этом эффекте параметр "скорость" влияет на количество шариков 1..4
     effectTimer.setInterval(10);                     // Эффект работает только на высокой скорости
-  } 
+  }
   /*
   else if (aMode == DEMO_SWIRL) {
     // Это эффект Swirl
-    effectSpeed = getEffectSpeed(EFFECT_SWIRL);      // 
+    effectSpeed = getEffectSpeed(EFFECT_SWIRL);      //
     effectTimer.setInterval(10);                     // Этот эффект работает только на высокой скорости
-  } 
+  }
   */
   else {
     byte tmp_effect = mapModeToEffect(aMode);
@@ -311,10 +311,10 @@ void setTimersForMode(byte aMode) {
 
 boolean getUsageForMode(byte aMode) {
   if (aMode == DEMO_TEXT_0 || aMode == DEMO_TEXT_1 || aMode == DEMO_TEXT_2) {
-    // Это бегущий текст  
+    // Это бегущий текст
     return getUseTextInDemo();
   } else {
-    
+
     byte tmp_effect = mapModeToEffect(aMode);
     if (tmp_effect != 255) {
       return getEffectUsage(tmp_effect);
@@ -366,7 +366,7 @@ void modeFader() {
 #endif
 
 void checkIdleState() {
-  
+
 #if (SMOOTH_CHANGE == 1)
   modeFader();
 #endif
@@ -377,7 +377,7 @@ void checkIdleState() {
       autoplayTimer = millis();
       if (AUTOPLAY) nextMode();
     }
-    
+
     if ((millis() - autoplayTimer > autoplayTime) && AUTOPLAY) {    // таймер смены режима
       autoplayTimer = millis();
       if (modeCode == MC_TEXT && SHOW_FULL_TEXT) {    // режим текста
@@ -390,7 +390,7 @@ void checkIdleState() {
       }
     }
   } else {
-    if (idleTimer.isReady()) {                  // таймер холостого режима. 
+    if (idleTimer.isReady()) {                  // таймер холостого режима.
       idleState = true;
       autoplayTimer = millis();
       gameDemo = true;
@@ -398,22 +398,22 @@ void checkIdleState() {
       BTcontrol = false;
       loadingFlag = true;
       runningFlag = false;
-      controlFlag = false;                      // После начала игры пока не трогаем кнопки - игра автоматическая 
+      controlFlag = false;                      // После начала игры пока не трогаем кнопки - игра автоматическая
       drawingFlag = false;
       gamemodeFlag = false;
       gamePaused = false;
 
       AUTOPLAY = true;
-      
+
       FastLED.clear();
-      FastLED.show();      
+      FastLED.show();
     }
-  }  
+  }
 }
 
 byte mapEffectToMode(byte effect) {
   byte tmp_mode = 255;
-  
+
   switch (effect) {
     case EFFECT_SNOW:                tmp_mode = DEMO_SNOW; break;                 // snowRoutine();
     case EFFECT_BALL:                tmp_mode = DEMO_BALL; break;                 // ballRoutine();
@@ -453,7 +453,7 @@ byte mapEffectToMode(byte effect) {
 
 byte mapEffectToModeCode(byte effect) {
   byte tmp_mode = 255;
-  
+
   switch (effect) {
     case EFFECT_SNOW:                tmp_mode = MC_SNOW; break;                 // snowRoutine();
     case EFFECT_BALL:                tmp_mode = MC_BALL; break;                 // ballRoutine();
@@ -493,9 +493,9 @@ byte mapEffectToModeCode(byte effect) {
 
 byte mapGameToMode(byte game) {
   byte tmp_mode = 255;
-  
+
   switch (game) {
-    case GAME_SNAKE:    tmp_mode = DEMO_SNAKE;    break;  // snakeRoutine(); 
+    case GAME_SNAKE:    tmp_mode = DEMO_SNAKE;    break;  // snakeRoutine();
     case GAME_TETRIS:   tmp_mode = DEMO_TETRIS;   break;  // tetrisRoutine();
     case GAME_MAZE:     tmp_mode = DEMO_MAZE;     break;  // mazeRoutine();
     case GAME_RUNNER:   tmp_mode = DEMO_RUNNER;   break;  // runnerRoutine();
@@ -506,6 +506,8 @@ byte mapGameToMode(byte game) {
 }
 
 byte mapModeToEffect(byte aMode) {
+  return DEMO_RAINBOW;
+
   byte tmp_effect = 255;
   // Если режима нет в списке - ему нет соответствия среди эффектов - значит это игра или бегущий текст
   switch (aMode) {
@@ -533,7 +535,7 @@ byte mapModeToEffect(byte aMode) {
     case DEMO_PAINTBALL:            tmp_effect = EFFECT_PAINTBALL;  break;          // lightBallsRoutine()
     case DEMO_SWIRL:                tmp_effect = EFFECT_SWIRL; break;               // swirlRoutine()
     case DEMO_LIGHTERS:             tmp_effect = EFFECT_LIGHTERS;  break;           // lightersRoutine()
-    
+
     case DEMO_ANIMATION_1:          tmp_effect = EFFECT_ANIMATION_1; break;         // animation(1);
     /*
     case DEMO_ANIMATION_2:          tmp_effect = EFFECT_ANIMATION_2; break;         // animation(2);
@@ -546,11 +548,11 @@ byte mapModeToEffect(byte aMode) {
     case DEMO_TEXT_1 :  break;      // Бегущий текст
     case DEMO_TEXT_2 :  break;      // Бегущий текст
 
-    case DEMO_SNAKE: break;         // snakeRoutine(); 
+    case DEMO_SNAKE: break;         // snakeRoutine();
     case DEMO_TETRIS: break;        // tetrisRoutine();
     case DEMO_MAZE: break;          // mazeRoutine();
     case DEMO_RUNNER: break;        // runnerRoutine();
-    case DEMO_ARKANOID: break;      // arkanoidRoutine();    
+    case DEMO_ARKANOID: break;      // arkanoidRoutine();
   }
   return tmp_effect;
 }
@@ -577,8 +579,8 @@ byte mapModeToGame(byte aMode) {
     case DEMO_RAINBOW:              break;       // rainbowRoutine();
     case DEMO_RAINBOW_DIAG:         break;       // rainbowDiagonalRoutine();
     case DEMO_FIRE:                 break;       // fireRoutine()
-    case DEMO_DAWN_ALARM:           break;       // dawnProcedure(); 
-    case DEMO_FILL_COLOR:           break;       // fillColorProcedure(); 
+    case DEMO_DAWN_ALARM:           break;       // dawnProcedure();
+    case DEMO_FILL_COLOR:           break;       // fillColorProcedure();
     case DEMO_PAINTBALL:            break;       // lightBallsRoutine()
     case DEMO_SWIRL:                break;       // swirlRoutine()
     case DEMO_LIGHTERS:             break;       // lightersRoutine()
@@ -593,13 +595,13 @@ byte mapModeToGame(byte aMode) {
     case DEMO_TEXT_1:               break;       // Бегущий текст
     case DEMO_TEXT_2:               break;       // Бегущий текст
 
-    case DEMO_SNAKE:    tmp_game = GAME_SNAKE;    break;     // snakeRoutine(); 
+    case DEMO_SNAKE:    tmp_game = GAME_SNAKE;    break;     // snakeRoutine();
     case DEMO_TETRIS:   tmp_game = GAME_TETRIS;   break;     // tetrisRoutine();
     case DEMO_MAZE:     tmp_game = GAME_MAZE;     break;     // mazeRoutine();
     case DEMO_RUNNER:   tmp_game = GAME_RUNNER;   break;     // runnerRoutine();
     case DEMO_ARKANOID: tmp_game = GAME_ARKANOID; break;     // arkanoidRoutine();
 
-    case DEMO_CLOCK:                break;  // clockRoutine();     
+    case DEMO_CLOCK:                break;  // clockRoutine();
   }
   return tmp_game;
 }
@@ -610,8 +612,8 @@ byte mapAlarmToEffect(byte alrmIdx) {
   // EFFECT_LIST F("Снегопад,Шарик,Радуга,Огонь,The Matrix,Шарики,Часы,Звездопад,Конфетти,Радуга диагональная,Цветной шум,Облака,Лава,Плазма,Радужные переливы,Полосатые переливы,Зебра,Шумящий лес,Морской прибой,Лампа,Рассвет,Анимация 1,Анимация 2,Анимация 3,Анимация 4,Анимация 5")
   // const byte ALARM_LIST_IDX[] PROGMEM = {EFFECT_SNOW, EFFECT_BALL, EFFECT_RAINBOW, EFFECT_FIRE, EFFECT_MATRIX, EFFECT_BALLS,
   //                                        EFFECT_STARFALL, EFFECT_SPARKLES, EFFECT_RAINBOW_DIAG, EFFECT_NOISE_MADNESS, EFFECT_NOISE_CLOUD,
-  //                                        EFFECT_NOISE_LAVA, EFFECT_NOISE_PLASMA, EFFECT_NOISE_RAINBOW, EFFECT_NOISE_RAINBOW_STRIP, 
-  //                                        EFFECT_NOISE_ZEBRA, EFFECT_NOISE_FOREST, EFFECT_NOISE_OCEAN, EFFECT_DAWN_ALARM, 
+  //                                        EFFECT_NOISE_LAVA, EFFECT_NOISE_PLASMA, EFFECT_NOISE_RAINBOW, EFFECT_NOISE_RAINBOW_STRIP,
+  //                                        EFFECT_NOISE_ZEBRA, EFFECT_NOISE_FOREST, EFFECT_NOISE_OCEAN, EFFECT_DAWN_ALARM,
   //                                        EFFECT_ANIMATION_1, EFFECT_ANIMATION_2, EFFECT_ANIMATION_3, EFFECT_ANIMATION_4, EFFECT_ANIMATION_5};
   return pgm_read_byte(&(ALARM_LIST_IDX[alrmIdx]));
 }
