@@ -110,8 +110,8 @@ void rainbowRoutine() {
   }
   hue += 3;
   for (byte i = 0; i < WIDTH; i++) {
-    CRGB thisColor = CHSV((byte)(hue + i * float(255 / WIDTH)), 255, 255);
-    for (byte j = 0; j < HEIGHT; j++)      
+    CRGB thisColor = CHSV((byte)(hue + i * float(255 / WIDTH * 4)), 255, 255);
+    for (byte j = 0; j < HEIGHT; j++)
       drawPixelXY(i, j, thisColor);   //leds[getPixelNumber(i, j)] = thisColor;
   }
 }
@@ -126,7 +126,7 @@ void rainbowDiagonalRoutine() {
   hue += 3;
   for (byte x = 0; x < WIDTH; x++) {
     for (byte y = 0; y < HEIGHT; y++) {
-      CRGB thisColor = CHSV((byte)(hue + (float)(WIDTH / HEIGHT * x + y) * (float)(255 / max(WIDTH, HEIGHT))), 255, 255);      
+      CRGB thisColor = CHSV((byte)(hue + (float)(WIDTH / HEIGHT * x + y) * (float)(255 / max(WIDTH, HEIGHT))), 255, 255);
       drawPixelXY(x, y, thisColor); //leds[getPixelNumber(i, j)] = thisColor;
     }
   }
@@ -368,7 +368,7 @@ void starfallRoutine() {
     loadingFlag = false;
     FastLED.clear();  // очистить
   }
-  
+
   // заполняем головами комет левую и верхнюю линию
   for (byte i = HEIGHT / 2; i < HEIGHT; i++) {
     if (getPixColorXY(0, i) == 0
@@ -377,7 +377,7 @@ void starfallRoutine() {
         && getPixColorXY(0, i - 1) == 0)
       leds[getPixelNumber(0, i)] = CHSV(random(0, 200), SATURATION, 255);
   }
-  
+
   for (byte i = 0; i < WIDTH / 2; i++) {
     if (getPixColorXY(i, HEIGHT - 1) == 0
         && (random(0, STAR_DENSE) == 0)
@@ -422,8 +422,8 @@ void sparklesRoutine() {
 
 int8_t row, col;                   // Для эффекта спирали  - точка "глолвы" змейки, бегающей по спирали (первая змейка для круговой спирали)
 int8_t row2, col2;                 // Для эффекта спирали  - точка "глолвы" змейки, бегающей по спирали (вторая змейка для плоской спирали)
-int8_t dir, dir2;                  // Для эффекта спирали на плоскости - направление движениия змейки: 0 - вниз; 1 - влево; 2 - вверх; 3 - вправо; 
-int8_t range[4], range2[4];        // Для эффекта спирали на плоскости - границы разворачивания спирали; 
+int8_t dir, dir2;                  // Для эффекта спирали на плоскости - направление движениия змейки: 0 - вниз; 1 - влево; 2 - вверх; 3 - вправо;
+int8_t range[4], range2[4];        // Для эффекта спирали на плоскости - границы разворачивания спирали;
 uint16_t tail[8], tail2[8];        // Для эффекта спирали на плоскости - позиции хвоста змейки. HiByte = x, LoByte=y
 CHSV tailColor;                    // Цвет последней точки "хвоста" змейки. Этот же цвет используется для предварительной заливки всей матрицы
 CHSV tailColor2;                   // Предварительная заливка нужна для корректного отображения часов поверх специальных эффектов будильника
@@ -431,7 +431,7 @@ boolean firstRowFlag;              // Флаг начала самого пер�
 byte dawnBrightness;               // Текущая яркость будильника "рассвет"
 byte tailBrightnessStep;           // Шаг приращения яркости будильника "рассвет"
 byte dawnColorIdx;                 // Индекс в массиве цвета "заливки" матрицы будильника "рассвет" (голова змейки)
-byte dawnColorPrevIdx;             // Предыдущий индекс - нужен для корректного цвета отрисовки "хвоста" змейки, 
+byte dawnColorPrevIdx;             // Предыдущий индекс - нужен для корректного цвета отрисовки "хвоста" змейки,
                                    // когда голова начинает новый кадр внизу матрицы, а хвост - вверху от предыдущего кадра
 byte step_cnt;                     // Номер шага эффекта, чтобы определить какой длины "хвост" у змейки
 
@@ -453,9 +453,9 @@ void dawnProcedure() {
   if (loadingFlag) {
     modeCode = MC_DAWN_ALARM;
     dawnBrightness = MIN_DAWN_BRIGHT;
-    
+
     FastLED.clear();  // очистить
-    FastLED.setBrightness(dawnBrightness);        
+    FastLED.setBrightness(dawnBrightness);
 
     if (realDawnDuration <= 0 || realDawnDuration > dawnDuration) realDawnDuration = dawnDuration;
     dawnTimer.setInterval(realDawnDuration * 60000L / (MAX_DAWN_BRIGHT - MIN_DAWN_BRIGHT));
@@ -466,7 +466,7 @@ void dawnProcedure() {
     dawnBrightness++;
     FastLED.setBrightness(dawnBrightness);
   }
-    
+
   byte b_tmp = mapEffectToMode(isAlarming ? alarmEffect : EFFECT_DAWN_ALARM);
   if (b_tmp == 255) b_tmp = DEMO_DAWN_ALARM;
   if (b_tmp == DEMO_DAWN_ALARM) {
@@ -477,7 +477,7 @@ void dawnProcedure() {
 
   // Если эффект "Лампа" и цвет - черный (остался от "выключено" - цвет лампы - белый
   if (b_tmp == MC_FILL_COLOR && globalColor == 0) {
-     globalColor = 0xFFFFFF;          
+     globalColor = 0xFFFFFF;
   }
 
   // Спец.режимы так же как и обычные вызываются в customModes (DEMO_DAWN_ALARM_SPIRAL и DEMO_DAWN_ALARM_SQUARE)
@@ -487,28 +487,28 @@ void dawnProcedure() {
   // используемый в качестве рассвета
   loadingFlag = false;
 }
-  
+
 // "Рассвет" по спирали, для ламп на круговой матрице (свернутой в трубу)
 void dawnLampSpiral() {
-  
+
   if (loadingFlag) {
     row = 0, col = 0;
-    
-    dawnBrightness = MIN_DAWN_BRIGHT; 
+
+    dawnBrightness = MIN_DAWN_BRIGHT;
     tailBrightnessStep = 16;
     firstRowFlag = true;
     dawnColorIdx = 0;
     dawnColorPrevIdx = 0;
-    
-    tailColor = CHSV(0, 255, 255 - 8 * tailBrightnessStep); 
+
+    tailColor = CHSV(0, 255, 255 - 8 * tailBrightnessStep);
   }
 
   boolean flag = true;
   int8_t x=col, y=row;
-  
+
   if (!firstRowFlag) fillAll(tailColor);
-  
-  byte tail_len = min(8, WIDTH - 1);  
+
+  byte tail_len = min(8, WIDTH - 1);
   for (byte i=0; i<tail_len; i++) {
     x--;
     if (x < 0) { x = WIDTH - 1; y--; }
@@ -521,27 +521,27 @@ void dawnLampSpiral() {
     byte idx = y > row ? dawnColorPrevIdx : dawnColorIdx;
     byte dawnHue = pgm_read_byte(&(dawnColorHue[idx]));
     byte dawnSat = pgm_read_byte(&(dawnColorSat[idx]));
-        
-    tailColor = CHSV(dawnHue, dawnSat, 255 - i * tailBrightnessStep); 
-    drawPixelXY(x,y, tailColor);  
+
+    tailColor = CHSV(dawnHue, dawnSat, 255 - i * tailBrightnessStep);
+    drawPixelXY(x,y, tailColor);
   }
-  
+
   if (flag) {
     firstRowFlag = false;
     dawnColorPrevIdx = dawnColorIdx;
   }
   if (dawnBrightness == 255 && tailBrightnessStep > 8) tailBrightnessStep -= 2;
-  
+
   col++;
   if (col >= WIDTH) {
     col = 0; row++;
   }
-  
-  if (row >= HEIGHT) row = 0;  
+
+  if (row >= HEIGHT) row = 0;
 
   if (col == 0 && row == 0) {
-    // Кол-во элементов массива - 16; Шагов яркости - 255; Изменение индекса каждые 16 шагов яркости. 
-    dawnColorIdx = dawnBrightness >> 4;  
+    // Кол-во элементов массива - 16; Шагов яркости - 255; Изменение индекса каждые 16 шагов яркости.
+    dawnColorIdx = dawnBrightness >> 4;
   }
 }
 
@@ -550,25 +550,25 @@ void dawnLampSquare() {
 
   if (loadingFlag) {
     SetStartPos();
-    
-    dawnBrightness = MIN_DAWN_BRIGHT; 
+
+    dawnBrightness = MIN_DAWN_BRIGHT;
     tailBrightnessStep = 16;
     dawnColorIdx = 0;
     step_cnt = 0;
 
     memset(tail, 0, sizeof(uint16_t) * 8);
     memset(tail2, 0, sizeof(uint16_t) * 8);
-    
-    tailColor = CHSV(0, 255, 255 - 8 * tailBrightnessStep); 
+
+    tailColor = CHSV(0, 255, 255 - 8 * tailBrightnessStep);
   }
-  
+
   int8_t x=col, y=row;
   int8_t x2=col2, y2=row2;
 
   fillAll(tailColor);
-  
+
   step_cnt++;
-  
+
   for (byte i=7; i>0; i--) {
     tail[i]  = tail[i-1];
     tail2[i] = tail2[i-1];
@@ -582,18 +582,18 @@ void dawnLampSquare() {
   byte dawnSat2 = pgm_read_byte(&(dawnColorSat2[dawnColorIdx]));
 
   for (byte i=0; i < 8; i++) {
-    
-    tailColor  = CHSV(dawnHue, dawnSat, 255 - i * tailBrightnessStep); 
-    tailColor2 = CHSV(dawnHue2, dawnSat2, 255 - i * tailBrightnessStep); 
+
+    tailColor  = CHSV(dawnHue, dawnSat, 255 - i * tailBrightnessStep);
+    tailColor2 = CHSV(dawnHue2, dawnSat2, 255 - i * tailBrightnessStep);
 
     if (i<=step_cnt) {
       x  = tail[i] >>8; y  = tail[i]  & 0xff;
       x2 = tail2[i]>>8; y2 = tail2[i] & 0xff;
-      drawPixelXY(x,  y,  tailColor);  
-      drawPixelXY(x2, y2, tailColor2);  
+      drawPixelXY(x,  y,  tailColor);
+      drawPixelXY(x2, y2, tailColor2);
     }
   }
-  
+
   if (dawnBrightness == 255 && tailBrightnessStep > 8) tailBrightnessStep -= 2;
 
   switch(dir) {
@@ -622,11 +622,11 @@ void dawnLampSquare() {
       col++;
       if (col >= range[dir]) {
         range[dir] = col + 2;
-        dir = 0;        
+        dir = 0;
       }
       break;
   }
-  
+
   switch(dir2) {
     case 0: // вниз;
       row2--;
@@ -653,16 +653,16 @@ void dawnLampSquare() {
       col2++;
       if (col2 >= range2[dir2]) {
         range2[dir2] = col2 + 2;
-        dir2 = 0;        
+        dir2 = 0;
       }
       break;
   }
-  
+
   bool out  = (col  < 0 || col  >= WIDTH) && (row  < 0 || row  >= HEIGHT);
   bool out2 = (col2 < 0 || col2 >= WIDTH) && (row2 < 0 || row2 >= HEIGHT);
   if (out && out2) {
-    // Кол-во элементов массива - 16; Шагов яркости - 255; Изменение индекса каждые 16 шагов яркости. 
-    dawnColorIdx = dawnBrightness >> 4;  
+    // Кол-во элементов массива - 16; Шагов яркости - 255; Изменение индекса каждые 16 шагов яркости.
+    dawnColorIdx = dawnBrightness >> 4;
     SetStartPos();
     step_cnt = 0;
   }
@@ -686,7 +686,7 @@ void SetStartPos() {
     row = HEIGHT / 2 - 1;     // 7
     row2 = HEIGHT - row - 1;  // 8
   }
-  
+
   dir = 2; dir2 = 0;
   // 0 - вниз; 1 - влево; 2 - вверх; 3 - вправо;
   range[0] = row-2; range[1] = col-2; range[2] = row+2; range[3] = col+2;
@@ -702,13 +702,13 @@ void fillColorProcedure() {
   }
 
   byte bright =
-    isAlarming && !isAlarmStopped 
+    isAlarming && !isAlarmStopped
     ? dawnBrightness
     : (specialMode ? specialBrightness : globalBrightness);
 
-  FastLED.setBrightness(bright);  
-  
-  fillAll(gammaCorrection(globalColor));    
+  FastLED.setBrightness(bright);
+
+  fillAll(gammaCorrection(globalColor));
 }
 
 // ----------------------------- СВЕТЛЯКИ ------------------------------
@@ -776,10 +776,10 @@ void lightBallsRoutine() {
     dir_mx = WIDTH > HEIGHT ? 0 : 1;                                 // 0 - квадратные сегменты расположены горизонтально, 1 - вертикально
     seg_num = dir_mx == 0 ? (WIDTH / HEIGHT) : (HEIGHT / WIDTH);     // вычисляем количество сегментов, умещающихся на матрице
     seg_size = dir_mx == 0 ? HEIGHT : WIDTH;                         // Размер квадратного сегмента (высота и ширина равны)
-    seg_offset = ((dir_mx == 0 ? WIDTH : HEIGHT) - seg_size * seg_num) / (seg_num + 1); // смещение от края матрицы и между сегментами    
+    seg_offset = ((dir_mx == 0 ? WIDTH : HEIGHT) - seg_size * seg_num) / (seg_num + 1); // смещение от края матрицы и между сегментами
     BorderWidth = 0;
   }
-  
+
   // Apply some blurring to whatever's already on the matrix
   // Note that we never actually clear the matrix, we just constantly
   // blur it repeatedly.  Since the blurring is 'lossy', there's
@@ -794,7 +794,7 @@ void lightBallsRoutine() {
   byte cnt = map(effectSpeed, 0, 255, 1, 4);
 
   if (USE_SEGMENTS != 0) {
-    // Для неквадратных - вычленяем квадратные сегменты, которые равномерно распределяем по ширине / высоте матрицы 
+    // Для неквадратных - вычленяем квадратные сегменты, которые равномерно распределяем по ширине / высоте матрицы
     uint8_t  i = beatsin8(  91, 0, seg_size - BorderWidth - 1);
     uint8_t  j = beatsin8( 109, 0, seg_size - BorderWidth - 1);
     uint8_t  k = beatsin8(  73, 0, seg_size - BorderWidth - 1);
@@ -804,9 +804,9 @@ void lightBallsRoutine() {
     uint8_t d2 = ms / 41;
     uint8_t d3 = ms / 73;
     uint8_t d4 = ms / 97;
-    
+
     for (uint8_t ii = 0; ii < seg_num; ii++) {
-      delay(0); // Для предотвращения ESP8266 Watchdog Timer      
+      delay(0); // Для предотвращения ESP8266 Watchdog Timer
       uint8_t cx = dir_mx == 0 ? (seg_offset * (ii + 1) + seg_size * ii) : 0;
       uint8_t cy = dir_mx == 0 ? 0 : (seg_offset * (ii + 1) + seg_size * ii);
       uint8_t color_shift = ii * 50;
@@ -814,37 +814,37 @@ void lightBallsRoutine() {
       if (cnt <= 2) { idx = XY(j+cx, k+cy); leds[idx] += CHSV( color_shift + d2, 200U, 255U); }
       if (cnt <= 3) { idx = XY(k+cx, m+cy); leds[idx] += CHSV( color_shift + d3, 200U, 255U); }
       if (cnt <= 4) { idx = XY(m+cx, i+cy); leds[idx] += CHSV( color_shift + d4, 200U, 255U); }
-      
-      // При соединении матрицы из угла вверх или вниз почему-то слева и справа узора остаются полосы, которые 
+
+      // При соединении матрицы из угла вверх или вниз почему-то слева и справа узора остаются полосы, которые
       // не гаснут обычным blur - гасим полоски левой и правой стороны дополнительно.
       // При соединении из угла влево или вправо или на неквадратных матрицах такого эффекта не наблюдается
-      for (byte i2 = cy; i2 < cy + seg_size; i2++) { 
+      for (byte i2 = cy; i2 < cy + seg_size; i2++) {
         fadePixel(cx + BorderWidth, i2, 15);
         fadePixel(cx + seg_size - BorderWidth - 1, i2, 15);
       }
     }
   }
-  else 
+  else
   {
     uint8_t  i = beatsin8(  91, BorderWidth, WIDTH - BorderWidth - 1);
     uint8_t  j = beatsin8( 109, BorderWidth, HEIGHT - BorderWidth - 1);
     uint8_t  k = beatsin8(  73, BorderWidth, WIDTH - BorderWidth - 1);
     uint8_t  m = beatsin8( 123, BorderWidth, HEIGHT - BorderWidth - 1);
-    
+
     if (cnt <= 1) { idx = XY(i, j); leds[idx] += CHSV( ms / 29, 200U, 255U); }
     if (cnt <= 2) { idx = XY(k, j); leds[idx] += CHSV( ms / 41, 200U, 255U); }
     if (cnt <= 3) { idx = XY(k, m); leds[idx] += CHSV( ms / 73, 200U, 255U); }
     if (cnt <= 4) { idx = XY(i, m); leds[idx] += CHSV( ms / 97, 200U, 255U); }
-  
+
     if (WIDTH == HEIGHT) {
-      // При соединении матрицы из угла вверх или вниз почему-то слева и справа узора остаются полосы, которые 
+      // При соединении матрицы из угла вверх или вниз почему-то слева и справа узора остаются полосы, которые
       // не гаснут обычным blur - гасим полоски левой и правой стороны дополнительно.
       // При соединении из угла влево или вправо или на неквадратных матрицах такого эффекта не наблюдается
-      for (byte i = 0; i < HEIGHT; i++) { 
+      for (byte i = 0; i < HEIGHT; i++) {
         fadePixel(0, i, 15);
         fadePixel(WIDTH-1, i, 15);
       }
-    } 
+    }
   }
 }
 
@@ -858,7 +858,7 @@ void swirlRoutine() {
     dir_mx = WIDTH > HEIGHT ? 0 : 1;                                 // 0 - квадратные сегменты расположены горизонтально, 1 - вертикально
     seg_num = dir_mx == 0 ? (WIDTH / HEIGHT) : (HEIGHT / WIDTH);     // вычисляем количество сегментов, умещающихся на матрице
     seg_size = dir_mx == 0 ? HEIGHT : WIDTH;                         // Размер квадратного сегмента (высота и ширина равны)
-    seg_offset = ((dir_mx == 0 ? WIDTH : HEIGHT) - seg_size * seg_num) / (seg_num + 1); // смещение от края матрицы и между сегментами    
+    seg_offset = ((dir_mx == 0 ? WIDTH : HEIGHT) - seg_size * seg_num) / (seg_num + 1); // смещение от края матрицы и между сегментами
     BorderWidth = seg_num == 1 ? 0 : 1;
   }
 
@@ -869,7 +869,7 @@ void swirlRoutine() {
   uint8_t blurAmount = dim8_raw(beatsin8(2,64,100));
   blur2d( leds, WIDTH, HEIGHT, blurAmount);
 
-  uint32_t ms = millis();  
+  uint32_t ms = millis();
   int16_t idx;
 
   if (USE_SEGMENTS != 0) {
@@ -887,13 +887,13 @@ void swirlRoutine() {
     uint8_t d4 = ms / 29;
     uint8_t d5 = ms / 37;
     uint8_t d6 = ms / 41;
-    
+
     for (uint8_t ii = 0; ii < seg_num; ii++) {
-      delay(0); // Для предотвращения ESP8266 Watchdog Timer      
+      delay(0); // Для предотвращения ESP8266 Watchdog Timer
       uint8_t cx = dir_mx == 0 ? (seg_offset * (ii + 1) + seg_size * ii) : 0;
       uint8_t cy = dir_mx == 0 ? 0 : (seg_offset * (ii + 1) + seg_size * ii);
       uint8_t color_shift = ii * 50;
-    
+
       // The color of each point shifts over time, each at a different speed.
       idx = XY( i+cx, j+cy); leds[idx] += CHSV( color_shift + d1, 200, 192);
       idx = XY(ni+cx,nj+cy); leds[idx] += CHSV( color_shift + d2, 200, 192);
@@ -901,11 +901,11 @@ void swirlRoutine() {
       idx = XY(ni+cx, j+cy); leds[idx] += CHSV( color_shift + d4, 200, 192);
       idx = XY( j+cx, i+cy); leds[idx] += CHSV( color_shift + d5, 200, 192);
       idx = XY(nj+cx,ni+cy); leds[idx] += CHSV( color_shift + d6, 200, 192);
-      
-      // При соединении матрицы из угла вверх или вниз почему-то слева и справа узора остаются полосы, которые 
+
+      // При соединении матрицы из угла вверх или вниз почему-то слева и справа узора остаются полосы, которые
       // не гаснут обычным blur - гасим полоски левой и правой стороны дополнительно.
       // При соединении из угла влево или вправо или на неквадратных матрицах такого эффекта не наблюдается
-      for (byte i2 = cy; i2 < cy + seg_size; i2++) { 
+      for (byte i2 = cy; i2 < cy + seg_size; i2++) {
         fadePixel(cx, i2, 15);
         fadePixel(cx + BorderWidth, i2, 15);
         fadePixel(cx + seg_size - 1, i2, 15);
@@ -927,23 +927,23 @@ void swirlRoutine() {
     idx = XY(ni,nj); leds[idx] += CHSV( ms / 13, 200, 192);
     idx = XY( i,nj); leds[idx] += CHSV( ms / 17, 200, 192);
     idx = XY(ni, j); leds[idx] += CHSV( ms / 29, 200, 192);
-    
+
     if (HEIGHT == WIDTH) {
       // для квадратных матриц - 6 точек создают более красивую картину
       idx = XY( j, i); leds[idx] += CHSV( ms / 37, 200, 192);
       idx = XY(nj,ni); leds[idx] += CHSV( ms / 41, 200, 192);
-      
-      // При соединении матрицы из угла вверх или вниз почему-то слева и справа узора остаются полосы, которые 
+
+      // При соединении матрицы из угла вверх или вниз почему-то слева и справа узора остаются полосы, которые
       // не гаснут обычным blur - гасим полоски левой и правой стороны дополнительно.
       // При соединении из угла влево или вправо или на неквадратных матрицах такого эффекта не наблюдается
-      for (byte i = 0; i < HEIGHT; i++) { 
+      for (byte i = 0; i < HEIGHT; i++) {
         fadePixel(0, i, 15);
         fadePixel(WIDTH-1, i, 15);
       }
-    }  
+    }
   }
 }
 
-uint16_t XY(uint8_t x, uint8_t y) { 
-  return getPixelNumber(x, y); 
+uint16_t XY(uint8_t x, uint8_t y) {
+  return getPixelNumber(x, y);
 }
