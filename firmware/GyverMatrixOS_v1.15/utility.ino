@@ -267,6 +267,28 @@ uint32_t getPixColorXY(int8_t x, int8_t y) {
 
 // получить номер пикселя в ленте по координатам
 uint16_t getPixelNumber(int8_t x, int8_t y) {
+  uint16_t n = (THIS_Y * _WIDTH + THIS_X);
+  uint16_t m = n;
+
+  uint16_t group16_number = n % 16;
+  uint16_t group2_number = n % 4;
+  // чётная ли группа из 16 диодов (считаем с 0)
+  bool is_group16_even = group16_number % 2 == 0;
+  // чётная ли группа из двух диодов (считаем с 0)
+  bool is_group4_even = n % 4 < 2;
+
+  uint16_t base = group16_number * 2;
+  m = (is_group16_even ? base : 4 - base % 2)
+
+  if (n % 4 >= 2) {
+    uint16_t diff = n % 2;
+    /* if (n % 16 % 2 == 1) {
+      diff = 1 - diff;
+    } */
+    base = 32 - n % 2 - 1;
+  }
+
+
   if ((THIS_Y % 2 == 0) || MATRIX_TYPE) {               // если чётная строка
     return (THIS_Y * _WIDTH + THIS_X);
   } else {                                              // если нечётная строка
@@ -282,7 +304,8 @@ uint32_t HEXtoInt(String hexValue) {
   number1 = (16 * tens) + ones;
 
   tens = (hexValue[2] < '9') ? hexValue[2] - '0' : hexValue[2] - '7';
-  ones = (hexValue[3] < '9') ? hexValue[3] - '0' : hexValue[3] - '7';
+  ones = (hexValue[3] < '9') ? hexValue[3] -
+   '0' : hexValue[3] - '7';
   number2 = (16 * tens) + ones;
 
   tens = (hexValue[4] < '9') ? hexValue[4] - '0' : hexValue[4] - '7';
