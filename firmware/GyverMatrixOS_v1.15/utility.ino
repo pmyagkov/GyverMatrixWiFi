@@ -265,35 +265,60 @@ uint32_t getPixColorXY(int8_t x, int8_t y) {
 
 #endif
 
+uint16_t** routing = new uint16_t *[16];
+uint16_t row4[8][4] = {
+  {0, 1, 31, 30},
+  {3, 2, 28, 29},
+  {4, 5, 27, 26},
+  {7, 6, 24, 25},
+  {8, 9, 23, 22},
+  {11, 10, 20, 21},
+  {12, 13, 19, 18},
+  {15, 14, 16, 17}
+};
+bool routingInited = false;
+
+uint16_t ** initializeRouting() {
+  if (routingInited) {
+    return routing;
+  }
+
+  uint16_t * row;
+  for (uint16_t k = 0; k < 8; k++) {
+    row = new uint16_t[16];
+    for (uint16_t i = 0; i < 4; i++) {
+      for (uint16_t j = 0; j < 4; j++) {
+        row[4 * i + j] = (uint16_t)(32 * i + row4[k][j]);
+        Serial.printf("%d,", row[4 * i + j]);
+      }
+    }
+
+    routing[k] = row;
+  }
+
+  for (uint16_t k = 0; k < 8; k++) {
+    row = new uint16_t[16];
+    for (uint16_t i = 0; i < 4; i++) {
+      for (uint16_t j = 0; j < 4; j++) {
+        row[4 * i + j] = (uint16_t)(128 + 32 * i + row4[k][j]);
+        // Serial.printf("%d,", row[4 * i + j]);
+      }
+    }
+
+    routing[8 + k] = row;
+  }
+
+  routingInited = true;
+
+  return routing;
+}
+
 // получить номер пикселя в ленте по координатам
 uint16_t getPixelNumber(int8_t x, int8_t y) {
-  uint16_t n = (THIS_Y * _WIDTH + THIS_X);
-  uint16_t m = n;
+  uint16_t ** r = initializeRouting();
 
-  uint16_t group16_number = n % 16;
-  uint16_t group2_number = n % 4;
-  // чётная ли группа из 16 диодов (считаем с 0)
-  bool is_group16_even = group16_number % 2 == 0;
-  // чётная ли группа из двух диодов (считаем с 0)
-  bool is_group4_even = n % 4 < 2;
-
-  uint16_t base = group16_number * 2;
-  m = (is_group16_even ? base : 4 - base % 2)
-
-  if (n % 4 >= 2) {
-    uint16_t diff = n % 2;
-    /* if (n % 16 % 2 == 1) {
-      diff = 1 - diff;
-    } */
-    base = 32 - n % 2 - 1;
-  }
-
-
-  if ((THIS_Y % 2 == 0) || MATRIX_TYPE) {               // если чётная строка
-    return (THIS_Y * _WIDTH + THIS_X);
-  } else {                                              // если нечётная строка
-    return (THIS_Y * _WIDTH + _WIDTH - THIS_X - 1);
-  }
+  uint16_t result = r[y][x];
+  return result;
 }
 
 // hex string to uint32_t
