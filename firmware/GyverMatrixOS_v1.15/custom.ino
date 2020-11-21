@@ -506,8 +506,6 @@ byte mapGameToMode(byte game) {
 }
 
 byte mapModeToEffect(byte aMode) {
-  return DEMO_RAINBOW;
-
   byte tmp_effect = 255;
   // Если режима нет в списке - ему нет соответствия среди эффектов - значит это игра или бегущий текст
   switch (aMode) {
